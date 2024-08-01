@@ -10,65 +10,6 @@ import java.io.IOException;
 import java.util.Scanner;
 
 
-//public class com.example.Main {
-//    public static void main(String[] args) throws IOException {
-////        com.example.Entity[][] board = new com.example.Entity[10][10];
-////
-////        makeBoard(board);
-////
-////
-////        System.out.print("how many turns do you want to see? ");
-//////        Scanner input = new Scanner(System.in);
-////        int turns = Integer.MAX_VALUE;
-////
-//////        printBoard(board);
-////        for (int currentTurn = 1; currentTurn <= turns; currentTurn++) {
-////            play(board, currentTurn);
-////
-////            System.out.println("Turn " + currentTurn);
-////            printBoard(board);
-////            System.out.println();
-////            if (demonsWin(board)) {
-////                System.out.println("Demons win");
-////                return;
-////            }
-////            if (soldiersWin(board)) {
-////                System.out.println("Soldiers win");
-////                return;
-////            }
-////        }
-////        input.close();
-//
-//        com.example.Entity[][] board = new com.example.Entity[10][10];
-//        makeBoard(board);
-//
-//        int turns = Integer.MAX_VALUE;
-//
-//        JFrame frame = new JFrame("Board Game");
-//        BoardPanel boardPanel = new BoardPanel(board);
-//        frame.add(boardPanel);
-//        frame.setSize(400, 400);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setVisible(true);
-//
-//        Timer timer = new Timer(500, e -> {
-//            play(board, turns);
-//
-//            boardPanel.repaint();
-//
-//            if (demonsWin(board)) {
-//                JOptionPane.showMessageDialog(frame, "Demons win");
-//                ((Timer) e.getSource()).stop();
-//            } else if (soldiersWin(board)) {
-//                JOptionPane.showMessageDialog(frame, "Soldiers win");
-//                ((Timer) e.getSource()).stop();
-//            }
-//        });
-//
-//        timer.start();
-//
-//    }
-
 public class Main {
     private Entity[][] board;
     private int currentTurn = 1;
@@ -127,30 +68,6 @@ public class Main {
 
         timer.start();
     }
-
-
-//    private static void clearScreen() {
-//        // Clear screen by printing a large number of new lines
-//        System.out.print("\033[H\033[2J");
-//        System.out.flush();
-//    }
-
-
-//    private static void printBoard() {
-//        for (int row = 0; row < board.length; row++) {
-//            for (int col = 0; col < board[row].length; col++) {
-//                if (board[row][col] == null) {
-//                    System.out.print(". ");
-//                } else if (board[row][col] instanceof Demon) {
-//                    System.out.print("* ");
-//                } else if (board[row][col] instanceof Soldier) {
-//                    System.out.print("S ");
-//                }
-//            }
-//            System.out.println();
-//        }
-//    }
-
 
 
     public static void makeBoard(Entity[][] board) throws FileNotFoundException {
@@ -244,21 +161,6 @@ public class Main {
             g.drawRect(x, y, size, size);
         }
     }
-
-//    public static void printBoard(com.example.Entity[][] board) {
-//        for (com.example.Entity[] entities : board) {
-//            for (int j = 0; j < board[0].length; j++) {
-//                if (entities[j] instanceof com.example.Soldier)
-//                    System.out.print("S");
-//                else if (entities[j] instanceof com.example.Demon)
-//                    System.out.print("*");
-//                else
-//                    System.out.print(" ");
-//            }
-//
-//            System.out.println();
-//        }
-//    }
 
     public static void play(Entity[][] board, int turn) {
         moveDemons(board, turn);

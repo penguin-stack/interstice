@@ -1,10 +1,10 @@
-SS  S S SS
-   * S
- S  S   S
- SS  SS  S
-S   S * S
-S SSS S
-SS S  *
-  SS   SS
- S S*  S
-*S    S*SS
+ SS* S SSS
+      S*S*
+ SSS* SSSS
+**S*S*S  S
+***   SSSS
+ **SSSSS *
+*S SS S S
+S *S   S*
+    S    S
+S    * * S
