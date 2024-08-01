@@ -29,11 +29,15 @@ public class Main {
         makeBoard(board);
 
         JFrame frame = new JFrame("Interstice");
+        frame.setLayout(new BorderLayout());
+
         BoardPanel boardPanel = new BoardPanel(board);
-        frame.add(boardPanel);
-        frame.setSize(400, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        frame.add(boardPanel, BorderLayout.CENTER);
+
+        JLabel turnLabel = new JLabel("Turn: 1", SwingConstants.CENTER);
+        frame.add(turnLabel, BorderLayout.EAST);
+
+        boardPanel.setTurnLabel(turnLabel);
 
         JButton startButton = new JButton("Start Game");
         startButton.addActionListener(new ActionListener() {
@@ -45,6 +49,9 @@ public class Main {
         });
 
         frame.add(startButton, BorderLayout.SOUTH);
+        frame.setSize(500, 400);  // Increased width to accommodate the turn label
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 
     private void startGameLoop(BoardPanel boardPanel) {
@@ -93,14 +100,12 @@ public class Main {
         private final Entity[][] board;
         private final Image demonImage;
         private final Image knightImage;
-        private final JLabel turnLabel;
+        private JLabel turnLabel;
 
         public BoardPanel(Entity[][] board) {
             this.board = board;
             this.demonImage = loadImage("demon.png");
             this.knightImage = loadImage("knight.png");
-            this.turnLabel = new JLabel("Turn: 1");
-            this.add(turnLabel);
 
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -163,8 +168,14 @@ public class Main {
             g.drawRect(x, y, size, size);
         }
 
+        public void setTurnLabel(JLabel turnLabel) {
+            this.turnLabel = turnLabel;
+        }
+
         public void updateTurnLabel(int turn) {
-            turnLabel.setText("Turn: " + turn);
+            if (turnLabel != null) {
+                turnLabel.setText("Turn: " + turn);
+            }
         }
     }
 
