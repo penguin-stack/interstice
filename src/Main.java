@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Random;
 import java.util.Scanner;
 
 
@@ -67,6 +68,33 @@ import java.util.Scanner;
 //
 //        timer.start();
 //
+//    }
+
+
+//public class Main {
+//    private static Entity[][] board;
+//    private static int currentTurn = 1;
+//    private boolean gameStarted = false;
+//
+//    public static void main(String[] args) throws IOException {
+//
+//        while (true) {
+//            board = new Entity[10][10];
+//            generateRandomGrid(board);
+//            printBoard(board);
+//            while (true) {
+//                play(board, currentTurn);
+//
+//                if (demonsWin(board) || soldiersWin(board))
+//                    break;
+//                currentTurn += 1;
+//            }
+//            System.out.println(currentTurn);
+//            if (currentTurn > 500) {
+//                break;
+//            }
+//            currentTurn = 1;
+//        }
 //    }
 
 public class Main {
@@ -150,6 +178,26 @@ public class Main {
 //            System.out.println();
 //        }
 //    }
+
+    public static void generateRandomGrid(Entity[][] board) {
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                int randInt = random.nextInt(100 - 1 + 1) + 1;
+                if (randInt <= 47) {
+                    board[i][j] = null;
+                }
+                else if (randInt <= 59){
+                    board[i][j] = new Demon(i,j);
+                } else {
+                    board[i][j] = new Soldier(i,j);
+                }
+            }
+        }
+
+    }
+
+
 
 
 
@@ -245,20 +293,20 @@ public class Main {
         }
     }
 
-//    public static void printBoard(com.example.Entity[][] board) {
-//        for (com.example.Entity[] entities : board) {
-//            for (int j = 0; j < board[0].length; j++) {
-//                if (entities[j] instanceof com.example.Soldier)
-//                    System.out.print("S");
-//                else if (entities[j] instanceof com.example.Demon)
-//                    System.out.print("*");
-//                else
-//                    System.out.print(" ");
-//            }
-//
-//            System.out.println();
-//        }
-//    }
+    public static void printBoard(Entity[][] board) {
+        for (Entity[] entities : board) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (entities[j] instanceof Soldier)
+                    System.out.print("S");
+                else if (entities[j] instanceof Demon)
+                    System.out.print("*");
+                else
+                    System.out.print(" ");
+            }
+
+            System.out.println();
+        }
+    }
 
     public static void play(Entity[][] board, int turn) {
         moveDemons(board, turn);
