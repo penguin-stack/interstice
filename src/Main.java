@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+
 public class Main {
     private Entity[][] board;
     private int currentTurn = 1;
@@ -53,7 +54,6 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 play(board, currentTurn);
                 boardPanel.repaint();
-                boardPanel.updateTurnLabel(currentTurn);
 
                 if (demonsWin(board)) {
                     JOptionPane.showMessageDialog(boardPanel, "Demons win " + currentTurn);
@@ -68,6 +68,7 @@ public class Main {
 
         timer.start();
     }
+
 
     public static void makeBoard(Entity[][] board) throws FileNotFoundException {
         File file = new File("world2.txt");
@@ -93,14 +94,11 @@ public class Main {
         private final Entity[][] board;
         private final Image demonImage;
         private final Image knightImage;
-        private final JLabel turnLabel;
 
         public BoardPanel(Entity[][] board) {
             this.board = board;
             this.demonImage = loadImage("demon.png");
             this.knightImage = loadImage("knight.png");
-            this.turnLabel = new JLabel("Turn: 1");
-            this.add(turnLabel);
 
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -161,10 +159,6 @@ public class Main {
             }
             g.setColor(Color.BLACK);
             g.drawRect(x, y, size, size);
-        }
-
-        public void updateTurnLabel(int turn) {
-            turnLabel.setText("Turn: " + turn);
         }
     }
 
