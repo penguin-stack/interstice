@@ -1,12 +1,12 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Scanner;
 
 
@@ -71,8 +71,10 @@ public class Main {
 
 
     public static void makeBoard(Entity[][] board) throws FileNotFoundException {
-        File file = new File("world2.txt");
-        Scanner scanner = new Scanner(file);
+        InputStream textStream = Main.class.getResourceAsStream("/world2.txt");
+        assert textStream != null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(textStream));
+        Scanner scanner = new Scanner(reader);
         int row = 0;
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
@@ -95,7 +97,7 @@ public class Main {
         private final Image demonImage;
         private final Image knightImage;
 
-        public BoardPanel(Entity[][] board) {
+        public BoardPanel(Entity[][] board) throws IOException {
             this.board = board;
             this.demonImage = loadImage("demon.png");
             this.knightImage = loadImage("knight.png");
@@ -114,8 +116,11 @@ public class Main {
             });
         }
 
-        private Image loadImage(String path) {
-            ImageIcon icon = new ImageIcon(path);
+        private Image loadImage(String path) throws IOException {
+            InputStream imageStream = Main.class.getResourceAsStream("/" + path);
+            assert imageStream != null;
+            BufferedImage image = ImageIO.read(imageStream);
+            ImageIcon icon = new ImageIcon(image);
             if (icon.getIconWidth() == -1) {
                 System.err.println("Error: Could not load image " + path);
                 return null;
@@ -172,9 +177,9 @@ public class Main {
 
     private static void multDemons(Entity[][] board) {
         for (int col = 0; col < board[0].length; col++) {
-            for (Entity[] entities : board) {
-                if (entities[col] instanceof Demon) {
-                    entities[col].mult(board);
+            for (int row = 0; row < board.length; row++) {
+                if (board[row][col] instanceof Demon) {
+                    board[row][col].mult(board);
                 }
             }
         }
@@ -182,9 +187,9 @@ public class Main {
 
     private static void multSoldiers(Entity[][] board) {
         for (int col = 0; col < board[0].length; col++) {
-            for (Entity[] entities : board) {
-                if (entities[col] instanceof Soldier) {
-                    entities[col].mult(board);
+            for (int row = 0; row < board.length; row++) {
+                if (board[row][col] instanceof Soldier) {
+                    board[row][col].mult(board);
                 }
             }
         }
@@ -192,9 +197,9 @@ public class Main {
 
     private static void starveDemons(Entity[][] board) {
         for (int col = 0; col < board[0].length; col++) {
-            for (Entity[] entities : board) {
-                if (entities[col] instanceof Demon) {
-                    ((Demon) entities[col]).starve(board);
+            for (int row = 0; row < board.length; row++) {
+                if (board[row][col] instanceof Demon) {
+                    ((Demon) board[row][col]).starve(board);
                 }
             }
         }
@@ -202,9 +207,9 @@ public class Main {
 
     private static void moveSoldiers(Entity[][] board, int currentTurn) {
         for (int col = 0; col < board[0].length; col++) {
-            for (Entity[] entities : board) {
-                if (entities[col] instanceof Soldier) {
-                    entities[col].move(board, currentTurn);
+            for (int row = 0; row < board.length; row++) {
+                if (board[row][col] instanceof Soldier) {
+                    board[row][col].move(board, currentTurn);
                 }
             }
         }
@@ -212,9 +217,9 @@ public class Main {
 
     private static void moveDemons(Entity[][] board, int currentTurn) {
         for (int col = 0; col < board[0].length; col++) {
-            for (Entity[] entities : board) {
-                if (entities[col] instanceof Demon) {
-                    entities[col].move(board, currentTurn);
+            for (int row = 0; row < board.length; row++) {
+                if (board[row][col] instanceof Demon) {
+                    board[row][col].move(board, currentTurn);
                 }
             }
         }

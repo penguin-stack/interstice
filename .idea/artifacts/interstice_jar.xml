@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="interstice:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/interstice_jar</output-path>
+    <root id="archive" name="interstice.jar">
+      <element id="module-output" name="interstice" />
+      <element id="dir-copy" path="$PROJECT_DIR$/resources" />
+    </root>
+  </artifact>
+</component>
