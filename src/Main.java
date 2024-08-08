@@ -71,90 +71,90 @@ import java.util.Scanner;
 //    }
 
 
-//public class Main {
-//    private static Entity[][] board;
-//    private static int currentTurn = 1;
-//    private boolean gameStarted = false;
-//
-//    public static void main(String[] args) throws IOException {
-//
-//        while (true) {
-//            board = new Entity[10][10];
-//            generateRandomGrid(board);
-//            printBoard(board);
-//            while (true) {
-//                play(board, currentTurn);
-//
-//                if (demonsWin(board) || soldiersWin(board))
-//                    break;
-//                currentTurn += 1;
-//            }
-//            System.out.println(currentTurn);
-//            if (currentTurn > 500) {
-//                break;
-//            }
-//            currentTurn = 1;
-//        }
-//    }
-
 public class Main {
-    private Entity[][] board;
-    private int currentTurn = 1;
+    private static Entity[][] board;
+    private static int currentTurn = 1;
     private boolean gameStarted = false;
 
     public static void main(String[] args) throws IOException {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                new Main().startGame();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
 
-    public void startGame() throws IOException {
-        board = new Entity[10][10];
-        makeBoard(board);
-
-        JFrame frame = new JFrame("Interstice");
-        BoardPanel boardPanel = new BoardPanel(board);
-        frame.add(boardPanel);
-        frame.setSize(400, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-
-        JButton startButton = new JButton("Start Game");
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameStarted = true;
-                startGameLoop(boardPanel);
-            }
-        });
-
-        frame.add(startButton, BorderLayout.SOUTH);
-    }
-
-    private void startGameLoop(BoardPanel boardPanel) {
-        Timer timer = new Timer(50, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        while (true) {
+            board = new Entity[10][10];
+            generateRandomGrid(board);
+            printBoard(board);
+            while (true) {
                 play(board, currentTurn);
-                boardPanel.repaint();
 
-                if (demonsWin(board)) {
-                    JOptionPane.showMessageDialog(boardPanel, "Demons win " + currentTurn);
-                    ((Timer) e.getSource()).stop();
-                } else if (soldiersWin(board)) {
-                    JOptionPane.showMessageDialog(boardPanel, "Soldiers win " + currentTurn);
-                    ((Timer) e.getSource()).stop();
-                }
-                currentTurn++;
+                if (demonsWin(board) || soldiersWin(board))
+                    break;
+                currentTurn += 1;
             }
-        });
-
-        timer.start();
+            System.out.println(currentTurn);
+            if (currentTurn > 500) {
+                break;
+            }
+            currentTurn = 1;
+        }
     }
+
+//public class Main {
+//    private Entity[][] board;
+//    private int currentTurn = 1;
+//    private boolean gameStarted = false;
+//
+//    public static void main(String[] args) throws IOException {
+//        SwingUtilities.invokeLater(() -> {
+//            try {
+//                new Main().startGame();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+//
+//    public void startGame() throws IOException {
+//        board = new Entity[10][10];
+//        makeBoard(board);
+//
+//        JFrame frame = new JFrame("Interstice");
+//        BoardPanel boardPanel = new BoardPanel(board);
+//        frame.add(boardPanel);
+//        frame.setSize(400, 400);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setVisible(true);
+//
+//        JButton startButton = new JButton("Start Game");
+//        startButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                gameStarted = true;
+//                startGameLoop(boardPanel);
+//            }
+//        });
+//
+//        frame.add(startButton, BorderLayout.SOUTH);
+//    }
+//
+//    private void startGameLoop(BoardPanel boardPanel) {
+//        Timer timer = new Timer(50, new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                play(board, currentTurn);
+//                boardPanel.repaint();
+//
+//                if (demonsWin(board)) {
+//                    JOptionPane.showMessageDialog(boardPanel, "Demons win " + currentTurn);
+//                    ((Timer) e.getSource()).stop();
+//                } else if (soldiersWin(board)) {
+//                    JOptionPane.showMessageDialog(boardPanel, "Soldiers win " + currentTurn);
+//                    ((Timer) e.getSource()).stop();
+//                }
+//                currentTurn++;
+//            }
+//        });
+//
+//        timer.start();
+//    }
 
 
 //    private static void clearScreen() {
@@ -184,10 +184,10 @@ public class Main {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 int randInt = random.nextInt(100 - 1 + 1) + 1;
-                if (randInt <= 47) {
+                if (randInt <= 20) {
                     board[i][j] = null;
                 }
-                else if (randInt <= 59){
+                else if (randInt <= 23){
                     board[i][j] = new Demon(i,j);
                 } else {
                     board[i][j] = new Soldier(i,j);
