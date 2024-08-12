@@ -4,11 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Random;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 
 //public class com.example.Main {
@@ -77,10 +74,41 @@ public class Main {
     private boolean gameStarted = false;
 
     public static void main(String[] args) throws IOException {
+        // r1 can be 1 to 98
+        // r2 can be r1+1 to 99
+//        ArrayList<int[]> list = new ArrayList<>();
+//        for (int r1 = 1; r1 <= 98; r1++) {
+//            for (int r2=r1+1; r2 <= 99; r2++) {
+//                int maxTurn = -1;
+//                for (int j = 0; j < 10; j++) {
+//                    board = new Entity[10][10];
+//                    generateRandomGrid(board, r1, r2);
+//                    while(true) {
+//                        play(board, currentTurn);
+//                        currentTurn += 1;
+//                        maxTurn = Math.max(maxTurn, currentTurn);
+//
+//                        if (demonsWin(board) || soldiersWin(board))
+//                            break;
+//
+//                    }
+//                    currentTurn = 1;
+//                }
+//                list.add(new int[] {r1, r2, maxTurn});
+//            }
+//        }
+//
+//        list.sort((o1, o2) -> Integer.compare(o2[2], o1[2]));
+//
+//        for (int[] x : list) {
+//            System.out.println(Arrays.toString(x));
+//        }
 
+
+        int maxTurn = -1;
         while (true) {
             board = new Entity[10][10];
-            generateRandomGrid(board);
+            generateRandomGrid(board, 61, 73);
             printBoard(board);
             while (true) {
                 play(board, currentTurn);
@@ -88,9 +116,12 @@ public class Main {
                 if (demonsWin(board) || soldiersWin(board))
                     break;
                 currentTurn += 1;
+                maxTurn = Math.max(currentTurn, maxTurn);
+
             }
             System.out.println(currentTurn);
-            if (currentTurn > 500) {
+            System.out.println("Max: " + maxTurn);
+            if (currentTurn > 1000) {
                 break;
             }
             currentTurn = 1;
@@ -179,15 +210,15 @@ public class Main {
 //        }
 //    }
 
-    public static void generateRandomGrid(Entity[][] board) {
+    public static void generateRandomGrid(Entity[][] board, int r1, int r2) {
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 int randInt = random.nextInt(100 - 1 + 1) + 1;
-                if (randInt <= 20) {
+                if (randInt <= r1) {
                     board[i][j] = null;
                 }
-                else if (randInt <= 23){
+                else if (randInt <= r2){
                     board[i][j] = new Demon(i,j);
                 } else {
                     board[i][j] = new Soldier(i,j);
