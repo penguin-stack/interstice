@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/interstice_jar</output-path>
     <root id="archive" name="interstice.jar">
       <element id="module-output" name="interstice" />
-      <element id="dir-copy" path="$PROJECT_DIR$/resources" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/resources" />
     </root>
   </artifact>
 </component>
