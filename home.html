@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Game with Ants and Beetles</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #121212; /* Set background color to gray */
+        }
+
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            font-size: 24px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #startButton:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<!-- Start button -->
+<button id="startButton">Play</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // Setup scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Grid size and cell size
+    const gridWidth = 10;
+    const gridHeight = 10;
+    let cellSize = 1; // Default cell size
+
+    // Entity Arrays
+    const ants = [];
+    const beetles = [];
+
+    // Function to create the grid
+    function createGrid() {
+        const gridMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        for (let i = 0; i <= gridWidth; i++) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(i * cellSize, 0, 0),
+                new THREE.Vector3(i * cellSize, 0, gridHeight * cellSize)
+            ]);
+            const line = new THREE.Line(geometry, gridMaterial);
+            scene.add(line);
+        }
+        for (let j = 0; j <= gridHeight; j++) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, j * cellSize),
+                new THREE.Vector3(gridWidth * cellSize, 0, j * cellSize)
+            ]);
+            const line = new THREE.Line(geometry, gridMaterial);
+            scene.add(line);
+        }
+    }
+
+    // Entity Class
+    class Entity {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.mesh = this.createMesh(color);
+            this.mesh.position.set((x + 0.5) * cellSize, 0.1, (y + 0.5) * cellSize);
+            scene.add(this.mesh);
+        }
+
+        createMesh(color) {
+            const geometry = new THREE.BoxGeometry(0.5 * cellSize, 0.5 * cellSize, 0.5 * cellSize);
+            const material = new THREE.MeshBasicMaterial({ color: color });
+            return new THREE.Mesh(geometry, material);
+        }
+
+        enforceBoundaries() {
+            this.x = Math.max(0, Math.min(gridWidth - 1, this.x));
+            this.y = Math.max(0, Math.min(gridHeight - 1, this.y));
+        }
+    }
+
+    // Ant and Beetle classes
+    class Ant extends Entity {
+        constructor(x, y) {
+            super(x, y, 0xff0000); // Red for ants
+        }
+
+        move(beetles) {
+            let closestBeetle = this.findClosest(beetles);
+            if (closestBeetle) {
+                if (Math.abs(this.x - closestBeetle.x) > Math.abs(this.y - closestBeetle.y)) {
+                    this.x += (this.x < closestBeetle.x) ? -1 : 1;
+                } else {
+                    this.y += (this.y < closestBeetle.y) ? -1 : 1;
+                }
+            }
+
+            this.enforceBoundaries();
+            this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
+        }
+
+        findClosest(beetles) {
+            let closest = null;
+            let minDist = Infinity;
+            beetles.forEach(beetle => {
+                const dist = Math.sqrt((this.x - beetle.x) ** 2 + (this.y - beetle.y) ** 2);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = beetle;
+                }
+            });
+            return closest;
+        }
+    }
+
+    class Beetle extends Entity {
+        constructor(x, y) {
+            super(x, y, 0x0000ff); // Blue for beetles
+        }
+
+        move(ants) {
+            let closestAnt = this.findClosest(ants);
+            if (closestAnt) {
+                if (Math.abs(this.x - closestAnt.x) > Math.abs(this.y - closestAnt.y)) {
+                    this.x += (this.x < closestAnt.x) ? 1 : -1;
+                } else {
+                    this.y += (this.y < closestAnt.y) ? 1 : -1;
+                }
+
+                // Eat the ant
+                if (this.x === closestAnt.x && this.y === closestAnt.y) {
+                    const index = ants.indexOf(closestAnt);
+                    if (index > -1) ants.splice(index, 1);
+                    closestAnt.mesh.visible = false;
+                }
+            }
+
+            this.enforceBoundaries();
+            this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
+        }
+
+        findClosest(ants) {
+            let closest = null;
+            let minDist = Infinity;
+            ants.forEach(ant => {
+                const dist = Math.sqrt((this.x - ant.x) ** 2 + (this.y - ant.y) ** 2);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = ant;
+                }
+            });
+            return closest;
+        }
+    }
+
+    // Initialize the grid and entities
+    createGrid();
+    for (let i = 0; i < 5; i++) {
+        ants.push(new Ant(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
+    }
+    for (let i = 0; i < 2; i++) {
+        beetles.push(new Beetle(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
+    }
+
+    // Animation loop
+    let lastTime = 0;
+    const updateInterval = 500;
+    let gameStarted = false; // Flag to indicate whether the game has started
+
+    function animate(timestamp) {
+        if (gameStarted) {
+            requestAnimationFrame(animate);
+
+            if (timestamp - lastTime > updateInterval) {
+                lastTime = timestamp;
+
+                // Move ants and beetles
+                ants.forEach(ant => ant.move(beetles));
+                beetles.forEach(beetle => beetle.move(ants));
+
+                renderer.render(scene, camera);
+            }
+        }
+    }
+
+    // Handle window resizing with debounce
+    let resizeTimeout;
+    function onWindowResize() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }, 100);
+    }
+
+    window.addEventListener('resize', onWindowResize);
+
+    // Set camera position
+    camera.position.set(5, 10, 10);
+    camera.lookAt(new THREE.Vector3(5, 0, 5));
+
+    // Event listener for start button
+    document.getElementById('startButton').addEventListener('click', function() {
+        document.getElementById('startButton').style.display = 'none'; // Hide the button after starting
+        gameStarted = true; // Set game flag to true
+        requestAnimationFrame(animate); // Start the animation loop
+    });
+
+    // Initial render
+    console.log(ants)
+    console.log(beetles)
+    renderer.render(scene, camera);
+</script>
+</body>
+</html>
