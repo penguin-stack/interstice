@@ -51,6 +51,18 @@
     // Entity Arrays
     const ants = [];
     const beetles = [];
+    let state = [
+            [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+            [0, 2, 0, 0, 1, 1, 0, 0, 0, 0],
+            [0, 2, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 2, 0, 0, 0, 0, 1, 1, 1, 0],
+            [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
 
     // Function to create the grid
     function createGrid() {
@@ -99,6 +111,7 @@
     class Ant extends Entity {
         constructor(x, y) {
             super(x, y, 0xff0000); // Red for ants
+            
         }
 
         move(beetles) {
@@ -127,15 +140,53 @@
             });
             return closest;
         }
+
+        numberOfNeighbors(state) {
+            let neighbors = 0;
+            
+            const directions = [
+                [-1, 0],  // Up
+                [1, 0],   // Down
+                [0, -1],  // Left
+                [0, 1],   // Right
+                [-1, -1], // Up-Left
+                [-1, 1],  // Up-Right
+                [1, -1],  // Down-Left
+                [1, 1]    // Down-Right
+            ];
+
+            for (let dir of directions) {
+                let newX = this.x + dir[0];
+                let newY = this.y + dir[1];
+
+                // Check if the new position is within matrix bounds
+                if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
+                    // console.log(`Checking position (${newX}, ${newY}): ${matrix[newX][newY]}`);
+                    // Add any specific logic here, e.g., check for a condition
+                    if (state[newX][newY] === 1) {
+                        neighbors += 1;
+                    }
+                }
+            }
+
+            return neighbors;
+        }
     }
 
     class Beetle extends Entity {
         constructor(x, y) {
             super(x, y, 0x0000ff); // Blue for beetles
+            this.hasNotEaten = 0;
+            this.sinceMult = 0;
+            this.aliveFor = 0;
         }
 
         move(ants) {
             let closestAnt = this.findClosest(ants);
+            let farthestEdge = null;
+            if (closestAnt === -1) {
+                farthestEdge = this.findFarthestEdge();
+            }
             if (closestAnt) {
                 if (Math.abs(this.x - closestAnt.x) > Math.abs(this.y - closestAnt.y)) {
                     this.x += (this.x < closestAnt.x) ? 1 : -1;
@@ -155,28 +206,161 @@
             this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
         }
 
+        // Function to find the farthest edge with priority North, East, South, West in case of a tie
+        findFarthestEdge() {
+            // Define the grid dimensions (0 to 9 for a 10x10 grid)
+            const gridSize = 10;
+
+            // Calculate distances to the four edges
+            const distanceToNorth = this.y;            // Distance to top (North) edge
+            const distanceToEast = gridSize - 1 - this.x;  // Distance to right (East) edge
+            const distanceToSouth = gridSize - 1 - this.y; // Distance to bottom (South) edge
+            const distanceToWest = this.x;             // Distance to left (West) edge
+
+            // Store distances and corresponding directions
+            const directions = [
+                { direction: 'North', distance: distanceToNorth },
+                { direction: 'East', distance: distanceToEast },
+                { direction: 'South', distance: distanceToSouth },
+                { direction: 'West', distance: distanceToWest }
+            ];
+
+            // Sort the directions by distance (descending) and then by priority order (North > East > South > West)
+            directions.sort((a, b) => {
+                if (b.distance !== a.distance) {
+                    return b.distance - a.distance; // Sort by distance, largest first
+                }
+                // If distances are equal, prioritize by North > East > South > West
+                const priorityOrder = ['North', 'East', 'South', 'West'];
+                return priorityOrder.indexOf(a.direction) - priorityOrder.indexOf(b.direction);
+            });
+
+            // Return the direction with the farthest edge
+            return directions[0].direction;
+        }
+
+
         findClosest(ants) {
-            let closest = null;
-            let minDist = Infinity;
+            let orthogonalAnts = [];
+            let orthogonalAntsInMinDist = [];
+            let orthogonalAntsInMinDistWithMaxNeighbors = [];
+
+
             ants.forEach(ant => {
-                const dist = Math.sqrt((this.x - ant.x) ** 2 + (this.y - ant.y) ** 2);
-                if (dist < minDist) {
-                    minDist = dist;
-                    closest = ant;
+                // check to see if ant has same x or y that way we know it's in the orthogonal dir
+                if (this.x === ant.x || this.y === ant.y) {
+                    orthogonalAnts.push(ant);
                 }
             });
+            
+            if (orthogonalAnts.length === 0) {
+                return -1;
+            }
+
+            // find the minDist
+            let minDist = Infinity;
+            orthogonalAnts.forEach(ant => {
+                let dist = Infinity;
+                if (this.x === ant.x) {
+                    dist = Math.abs(this.y - ant.y);
+                    if (dist < minDist) {
+                        minDist = dist;
+                    }
+                } else if (this.y === ant.y) {
+                    dist = Math.abs(this.x - ant.x);
+                    if (dist < minDist) {
+                        minDist = dist;
+                    }
+                }
+            });
+
+            // gather OrthogonalAntsInMinDist
+            orthogonalAnts.forEach(ant => {
+                let dist = Infinity;
+                if (this.x === ant.x) {
+                    dist = Math.abs(this.y - ant.y);
+                    if (dist === minDist) {
+                        orthogonalAntsInMinDist.push(ant);
+                    }
+                } else if (this.y === ant.y) {
+                    dist = Math.abs(this.x - ant.x);
+                    if (dist === minDist) {
+                        orthogonalAntsInMinDist.push(ant);
+                    }
+                }
+            });
+
+            if (orthogonalAntsInMinDist.length === 1) {
+                return orthogonalAntsInMinDist[0];
+            }
+
+            // find max number of neighbors
+            let maxNeighbors = -1;
+            orthogonalAntsInMinDist.forEach(ant => {
+                let neighbors = 0;
+                neighbors = ant.numberOfNeighbors(state);
+                if (neighbors > maxNeighbors) {
+                    maxNeighbors = neighbors;
+                }
+            });
+
+            // gather orthogonalAntsInMinDistWithMaxNeighbors
+            orthogonalAntsInMinDist.forEach(ant => {
+                let neighbors = 0;
+                neighbors = ant.numberOfNeighbors(state);
+                if (neighbors === maxNeighbors) {
+                    orthogonalAntsInMinDistWithMaxNeighbors.push(ant);
+                }
+            });
+
+            if (orthogonalAntsInMinDistWithMaxNeighbors.length === 1) {
+                return orthogonalAntsInMinDistWithMaxNeighbors[0];
+            }
+
+            // sort ants by direction
+            function getDirection(x, y, xi, yi) {
+                if (xi === x && yi < y) return 'North';  // North
+                if (xi === x && yi > y) return 'South';  // South
+                if (yi === y && xi > x) return 'East';   // East
+                if (yi === y && xi < x) return 'West';   // West
+                return null;
+            }
+
+            currentX = this.x;
+            currentY = this.y;
+
+            orthogonalAntsInMinDistWithMaxNeighbors.sort((a,b) => {
+                const directionA = getDirection(currentX, currentY, a.x, a.y);
+                const directionB = getDirection(currentX, currentY, b.x, b.y);
+
+                const directionOrder = ['North', 'East', 'South', 'West'];
+
+                return directionOrder.indexOf(directionA) - directionOrder.indexOf(directionB);
+            });
+
+            closest = orthogonalAntsInMinDistWithMaxNeighbors[0];
             return closest;
         }
     }
 
     // Initialize the grid and entities
     createGrid();
-    for (let i = 0; i < 5; i++) {
-        ants.push(new Ant(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
+    for (let i = 0; i < 10; i++) {
+        for(let j = 0; j < 10; j++) {
+            let c = state[i][j];
+            if (c === 2) {
+                beetles.push(new Beetle(j,i));
+            } else if (c === 1) {
+                ants.push(new Ant(j,i));
+            }
+        }
     }
-    for (let i = 0; i < 2; i++) {
-        beetles.push(new Beetle(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
-    }
+    // for (let i = 0; i < 5; i++) {
+    //     ants.push(new Ant(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
+    // }
+    // for (let i = 0; i < 2; i++) {
+    //     beetles.push(new Beetle(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
+    // }
 
     // Animation loop
     let lastTime = 0;
@@ -224,9 +408,6 @@
     });
 
     // Initial render
-    console.log(ants)
-    console.log(beetles)
-    // test
     renderer.render(scene, camera);
 </script>
 </body>
