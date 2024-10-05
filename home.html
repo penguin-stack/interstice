@@ -183,27 +183,100 @@
 
         move(ants) {
             let closestAnt = this.findClosest(ants);
-            let farthestEdge = null;
-            if (closestAnt === -1) {
-                farthestEdge = this.findFarthestEdge();
+            // console.log(closestAnt);
+            let dir = this.findFarthestEdge();
+
+            console.log(ants)
+            if (closestAnt !== -1) {
+                dir = this.getDirection(this.x, this.y, closestAnt.x, closestAnt.y);
             }
-            if (closestAnt) {
-                if (Math.abs(this.x - closestAnt.x) > Math.abs(this.y - closestAnt.y)) {
-                    this.x += (this.x < closestAnt.x) ? 1 : -1;
-                } else {
-                    this.y += (this.y < closestAnt.y) ? 1 : -1;
+
+            function moveOneUnit(x, y, direction) {
+                let newX = x;
+                let newY = y;
+
+                switch (direction) {
+                    case 'North':
+                        newY -= 1; // Move up (decrease y)
+                        break;
+                    case 'East':
+                        newX += 1; // Move right (increase x)
+                        break;
+                    case 'South':
+                        newY += 1; // Move down (increase y)
+                        break;
+                    case 'West':
+                        newX -= 1; // Move left (decrease x)
+                        break;
+                    default:
+                        console.log('Invalid direction');
+                        console.log(direction)
+                        return null;
                 }
 
-                // Eat the ant
-                if (this.x === closestAnt.x && this.y === closestAnt.y) {
-                    const index = ants.indexOf(closestAnt);
-                    if (index > -1) ants.splice(index, 1);
+                return { newX, newY };
+            }
+
+            let result = moveOneUnit(this.x, this.y, dir);
+            let newX = result.newX;
+            let newY = result.newY;
+
+            if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
+                if(state[newX][newY] === 0) {
+                    let oldX = this.x;
+                    let oldY = this.y;
+                    state[oldY][oldX] = 0;
+                    state[newY][newX] = 2;
+                    this.x = newX;
+                    this.y = newY;
+                    this.hasNotEaten += 1;
+                    this.sinceMult += 1;
+                    this.aliveFor += 1;
+                    this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
+                } else if (state[newX][newY] === 1) {
+                    // remove ant
                     closestAnt.mesh.visible = false;
+                    let index = ants.indexOf(closestAnt);
+                    if (index > -1) ants.splice(index, 1);
+                    
+                    let oldX = this.x;
+                    let oldY = this.y;
+                    state[oldY][oldX] = 0;
+                    state[newY][newX] = 2;
+                    this.x = newX;
+                    this.y = newY;
+                    this.hasNotEaten = 0;
+                    this.sinceMult += 1;
+                    this.aliveFor += 1;
+                    this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
+                } else {
+                    // direction to move to is a beetle so no movement will happen
+                    this.hasNotEaten = 0;
+                    this.sinceMult += 1;
+                    this.aliveFor += 1;
                 }
+                
             }
 
-            this.enforceBoundaries();
-            this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
+
+
+            // if (closestAnt) {
+            //     if (Math.abs(this.x - closestAnt.x) > Math.abs(this.y - closestAnt.y)) {
+            //         this.x += (this.x < closestAnt.x) ? 1 : -1;
+            //     } else {
+            //         this.y += (this.y < closestAnt.y) ? 1 : -1;
+            //     }
+
+            //     // Eat the ant
+            //     if (this.x === closestAnt.x && this.y === closestAnt.y) {
+            //         const index = ants.indexOf(closestAnt);
+            //         if (index > -1) ants.splice(index, 1);
+            //         closestAnt.mesh.visible = false;
+            //     }
+            // }
+
+            // this.enforceBoundaries();
+            // this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
         }
 
         // Function to find the farthest edge with priority North, East, South, West in case of a tie
@@ -239,6 +312,13 @@
             return directions[0].direction;
         }
 
+        getDirection(x, y, xi, yi) {
+                if (xi === x && yi < y) return 'North';  // North
+                if (xi === x && yi > y) return 'South';  // South
+                if (yi === y && xi > x) return 'East';   // East
+                if (yi === y && xi < x) return 'West';   // West
+                return this.findFarthestEdge();
+            }
 
         findClosest(ants) {
             let orthogonalAnts = [];
@@ -318,27 +398,21 @@
             }
 
             // sort ants by direction
-            function getDirection(x, y, xi, yi) {
-                if (xi === x && yi < y) return 'North';  // North
-                if (xi === x && yi > y) return 'South';  // South
-                if (yi === y && xi > x) return 'East';   // East
-                if (yi === y && xi < x) return 'West';   // West
-                return null;
-            }
+            
 
-            currentX = this.x;
-            currentY = this.y;
+            let currentX = this.x;
+            let currentY = this.y;
 
             orthogonalAntsInMinDistWithMaxNeighbors.sort((a,b) => {
-                const directionA = getDirection(currentX, currentY, a.x, a.y);
-                const directionB = getDirection(currentX, currentY, b.x, b.y);
+                const directionA = this.getDirection(currentX, currentY, a.x, a.y);
+                const directionB = this.getDirection(currentX, currentY, b.x, b.y);
 
                 const directionOrder = ['North', 'East', 'South', 'West'];
 
                 return directionOrder.indexOf(directionA) - directionOrder.indexOf(directionB);
             });
 
-            closest = orthogonalAntsInMinDistWithMaxNeighbors[0];
+            let closest = orthogonalAntsInMinDistWithMaxNeighbors[0];
             return closest;
         }
     }
@@ -375,8 +449,10 @@
                 lastTime = timestamp;
 
                 // Move ants and beetles
-                ants.forEach(ant => ant.move(beetles));
                 beetles.forEach(beetle => beetle.move(ants));
+                ants.forEach(ant => ant.move(beetles));
+                
+                console.log(state)
 
                 renderer.render(scene, camera);
             }
