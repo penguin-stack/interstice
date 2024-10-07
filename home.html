@@ -115,30 +115,112 @@
         }
 
         move(beetles) {
-            let closestBeetle = this.findClosest(beetles);
-            if (closestBeetle) {
-                if (Math.abs(this.x - closestBeetle.x) > Math.abs(this.y - closestBeetle.y)) {
-                    this.x += (this.x < closestBeetle.x) ? -1 : 1;
-                } else {
-                    this.y += (this.y < closestBeetle.y) ? -1 : 1;
-                }
-            }
 
-            this.enforceBoundaries();
-            this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
+            let closestBeetle = this.findClosest(beetles);
+
+
+
+
+
+
+
+
+
+
+            // let closestBeetle = this.findClosest(beetles);
+            // if (closestBeetle) {
+            //     if (Math.abs(this.x - closestBeetle.x) > Math.abs(this.y - closestBeetle.y)) {
+            //         this.x += (this.x < closestBeetle.x) ? -1 : 1;
+            //     } else {
+            //         this.y += (this.y < closestBeetle.y) ? -1 : 1;
+            //     }
+            // }
+
+            // this.enforceBoundaries();
+            // this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
         }
 
         findClosest(beetles) {
-            let closest = null;
-            let minDist = Infinity;
+            let orthogonalBeetles = [];
+            let orthogonalBeetlesInMinDist = [];
+
+
             beetles.forEach(beetle => {
-                const dist = Math.sqrt((this.x - beetle.x) ** 2 + (this.y - beetle.y) ** 2);
-                if (dist < minDist) {
-                    minDist = dist;
-                    closest = beetle;
+                // check to see if Beetle has same x or y that way we know it's in the orthogonal dir
+                if (this.x === beetle.x || this.y === beetle.y) {
+                    orthogonalBeetles.push(beetle);
                 }
             });
+            
+            if (orthogonalBeetles.length === 0) {
+                return -1;
+            }
+
+            // find the minDist
+            let minDist = Infinity;
+            orthogonalBeetles.forEach(beetle => {
+                let dist = Infinity;
+                if (this.x === beetle.x) {
+                    dist = Math.abs(this.y - beetle.y);
+                    if (dist < minDist) {
+                        minDist = dist;
+                    }
+                } else if (this.y === beetle.y) {
+                    dist = Math.abs(this.x - beetle.x);
+                    if (dist < minDist) {
+                        minDist = dist;
+                    }
+                }
+            });
+
+            // gather orthogonalBeetlesInMinDist
+            orthogonalBeetles.forEach(beetle => {
+                let dist = Infinity;
+                if (this.x === beetle.x) {
+                    dist = Math.abs(this.y - beetle.y);
+                    if (dist === minDist) {
+                        orthogonalBeetlesInMinDist.push(beetle);
+                    }
+                } else if (this.y === beetle.y) {
+                    dist = Math.abs(this.x - beetle.x);
+                    if (dist === minDist) {
+                        orthogonalBeetlesInMinDist.push(beetle);
+                    }
+                }
+            });
+
+            if (orthogonalBeetlesInMinDist.length === 1) {
+                return orthogonalBeetlesInMinDist[0];
+            }
+
+            let currentX = this.x;
+            let currentY = this.y;
+
+            orthogonalAntsInMinDist.sort((a,b) => {
+                const directionA = this.getDirection(currentX, currentY, a.x, a.y);
+                const directionB = this.getDirection(currentX, currentY, b.x, b.y);
+
+                const directionOrder = ['North', 'East', 'South', 'West'];
+
+                return directionOrder.indexOf(directionA) - directionOrder.indexOf(directionB);
+            });
+
+            let closest = orthogonalAntsInMinDist[0];
             return closest;
+
+            
+
+
+            // let closest = null;
+            // let minDist = Infinity;
+            // beetles.forEach(beetle => {
+            //     const dist = Math.sqrt((this.x - beetle.x) ** 2 + (this.y - beetle.y) ** 2);
+            //     if (dist < minDist) {
+            //         minDist = dist;
+            //         closest = beetle;
+            //     }
+            // });
+            // return closest;
         }
 
         numberOfNeighbors(state) {
@@ -163,7 +245,7 @@
                 if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
                     // console.log(`Checking position (${newX}, ${newY}): ${matrix[newX][newY]}`);
                     // Add any specific logic here, e.g., check for a condition
-                    if (state[newX][newY] === 1) {
+                    if (state[newY][newX] === 1) {
                         neighbors += 1;
                     }
                 }
@@ -222,7 +304,7 @@
             let newY = result.newY;
 
             if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
-                if(state[newX][newY] === 0) {
+                if(state[newY][newX] === 0) {
                     let oldX = this.x;
                     let oldY = this.y;
                     state[oldY][oldX] = 0;
@@ -233,7 +315,7 @@
                     this.sinceMult += 1;
                     this.aliveFor += 1;
                     this.mesh.position.set((this.x + 0.5) * cellSize, 0.1, (this.y + 0.5) * cellSize);
-                } else if (state[newX][newY] === 1) {
+                } else if (state[newY][newX] === 1) {
                     // remove ant
                     closestAnt.mesh.visible = false;
                     let index = ants.indexOf(closestAnt);
