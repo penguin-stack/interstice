@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demons vs Soldiers</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-template-rows: repeat(10, 50px);
+            gap: 2px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            border-radius: 4px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="grid"></div>
+
+    <script>
+        const gridSize = 10;
+        const grid = [];
+        const demons = '😈';
+        const soldiers = '♞';
+        const numDemons = 5; // Number of demons
+        const numSoldiers = 5; // Number of soldiers
+
+        let demonPositions = [];
+        let soldierPositions = [];
+
+        // Generate random positions for demons and soldiers
+        function getRandomPosition() {
+            return {
+                x: Math.floor(Math.random() * gridSize),
+                y: Math.floor(Math.random() * gridSize)
+            };
+        }
+
+        // Initialize the grid and place demons and soldiers randomly
+        function createGrid() {
+            const gridElement = document.getElementById('grid');
+            for (let i = 0; i < gridSize; i++) {
+                grid[i] = [];
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    grid[i][j] = cell;
+                    gridElement.appendChild(cell);
+                }
+            }
+
+            // Initialize random positions for demons and soldiers
+            for (let i = 0; i < numDemons; i++) {
+                demonPositions.push(getRandomPosition());
+            }
+            for (let i = 0; i < numSoldiers; i++) {
+                soldierPositions.push(getRandomPosition());
+            }
+        }
+
+        // Update the grid with current demon and soldier positions
+        function updateGrid() {
+            // Clear grid
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    grid[i][j].innerText = '';
+                }
+            }
+
+            // Place demons
+            demonPositions.forEach(({ x, y }) => {
+                grid[y][x].innerText = demons;
+            });
+
+            // Place soldiers
+            soldierPositions.forEach(({ x, y }) => {
+                grid[y][x].innerText = soldiers;
+            });
+        }
+
+        // Calculate Manhattan distance between two points
+        function distance(a, b) {
+            return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        }
+
+        // Move demons toward the nearest soldier
+        function moveDemons() {
+            demonPositions = demonPositions.map(demon => {
+                let closestSoldier = soldierPositions.reduce((closest, soldier) => {
+                    return distance(demon, soldier) < distance(demon, closest) ? soldier : closest;
+                }, soldierPositions[0]);
+
+                let dx = closestSoldier.x - demon.x;
+                let dy = closestSoldier.y - demon.y;
+
+                // Move demon closer to soldier
+                if (dx !== 0) demon.x += dx > 0 ? 1 : -1;
+                if (dy !== 0) demon.y += dy > 0 ? 1 : -1;
+
+                return demon;
+            });
+        }
+
+        // Move soldiers away from the nearest demon
+        function moveSoldiers() {
+            soldierPositions = soldierPositions.map(soldier => {
+                let closestDemon = demonPositions.reduce((closest, demon) => {
+                    return distance(soldier, demon) < distance(soldier, closest) ? demon : closest;
+                }, demonPositions[0]);
+
+                let dx = soldier.x - closestDemon.x;
+                let dy = soldier.y - closestDemon.y;
+
+                // Move soldier away from demon
+                if (dx !== 0) soldier.x += dx > 0 ? 1 : -1;
+                if (dy !== 0) soldier.y += dy > 0 ? 1 : -1;
+
+                return soldier;
+            });
+        }
+
+        // Main game loop
+        function gameLoop() {
+            moveDemons();
+            moveSoldiers();
+            updateGrid();
+        }
+
+        // Initialize the grid and start the game
+        createGrid();
+        updateGrid();
+
+        setInterval(gameLoop, 1000); // Update every second
+    </script>
+</body>
+</html>
