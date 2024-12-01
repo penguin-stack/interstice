@@ -3,36 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Game with Ants and Beetles</title>
+    <title>Interstice</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background-color: #121212; /* Set background color to gray */
         }
-
-        #startButton {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            font-size: 24px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-            z-index: 1;
-        }
-
-        #startButton:hover {
-            background-color: #218838;
-        }
     </style>
 </head>
 <body>
-<!-- Start button -->
-<!-- <button id="startButton">Play</button> -->
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -41,6 +22,7 @@
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setAnimationLoop( animate );
     document.body.appendChild(renderer.domElement);
 
     // Grid size and cell size
@@ -59,19 +41,6 @@
             [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
             [1, 0, 0, 0, 0, 0, 1, 1, 1, 0],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 0, 0, 1, 1, 1, 1, 0, 0],
-            [0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ];
-
-        let state2 = [
-            [0, 1, 0, 1, 1, 1, 0, 0, 0, 0],
-            [0, 1, 0, 0, 1, 1, 0, 0, 0, 0],
-            [0, 2, 0, 0, 0, 1, 0, 0, 0, 0],
-            [0, 2, 0, 0, 0, 0, 1, 1, 1, 0],
-            [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-            [1, 0, 0, 0, 0, 1, 1, 1, 1, 0],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
             [1, 0, 0, 0, 1, 1, 1, 1, 0, 0],
             [0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -114,7 +83,7 @@
             return new THREE.Mesh(geometry, material);
         }
 
-        removeObject() {
+        removeFromScene() {
             scene.remove(this.mesh);
         }
 
@@ -129,9 +98,7 @@
 
         
 
-        
-
-        
+    
     }
 
     class Beetle extends Entity {
@@ -148,98 +115,85 @@
         
     }
 
-    // Initialize the grid and entities
-    createGrid();
-    for (let i = 0; i < 10; i++) {
-        for(let j = 0; j < 10; j++) {
-            let c = state[i][j];
-            if (c === 2) {
-                beetles.push(new Beetle(j,i));
-            } else if (c === 1) {
-                ants.push(new Ant(j,i));
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    function randomState() {
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                state[i][j] = getRandomInt(3);
             }
         }
     }
-    // for (let i = 0; i < 5; i++) {
-    //     ants.push(new Ant(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
-    // }
-    // for (let i = 0; i < 2; i++) {
-    //     beetles.push(new Beetle(Math.floor(Math.random() * gridWidth), Math.floor(Math.random() * gridHeight)));
-    // }
+
+    function refreshGrid() {
+        // clear out grid first
+        ants.forEach(ant => {
+            ant.removeFromScene();
+        });
+        beetles.forEach(beetle => {
+            beetle.removeFromScene();
+        });
+        ants.length = 0;
+        beetles.length = 0;
+
+
+        initalizeGrid();
+    }
+
+    function initalizeGrid() {
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                if (state[i][j] === 1) {
+                    ants.push(new Ant(i,j));
+                } else if (state[i][j] === 2) {
+                    beetles.push(new Beetle(i,j));
+                }
+            }
+        }
+    }
+
+
 
     // Animation loop
     let lastTime = 0;
-    const updateInterval = 500;
-    // let gameStarted = false; // Flag to indicate whether the game has started
+    const updateInterval = 1000;
 
-    // function animate(timestamp) {
-    //     if (gameStarted) {
-    //         requestAnimationFrame(animate);
+    function animate(timestamp) {
+        if (timestamp - lastTime > updateInterval) {
+            lastTime = timestamp;
+            
+            renderer.render(scene, camera);
+            randomState();
+            refreshGrid();
+            
+        }
 
-    //         if (timestamp - lastTime > updateInterval) {
-    //             lastTime = timestamp;
+        // ants.forEach(ant => {
+        //     ant.mesh.rotation.x += 0.01;
+        //     ant.mesh.rotation.y += 0.01;
+        // });
+        // renderer.render(scene, camera);
+    }
 
-    //             // Move ants and beetles
-    //             // beetles.forEach(beetle => beetle.move(ants));
-    //             // ants.forEach(ant => ant.move(beetles));
-                
-    //             // console.log(state)
-
-    //             renderer.render(scene, camera);
-    //         }
-    //     }
-    // }
-
-    // Handle window resizing with debounce
-    // let resizeTimeout;
-    // function onWindowResize() {
-    //     clearTimeout(resizeTimeout);
-    //     resizeTimeout = setTimeout(() => {
-    //         camera.aspect = window.innerWidth / window.innerHeight;
-    //         camera.updateProjectionMatrix();
-    //         renderer.setSize(window.innerWidth, window.innerHeight);
-    //     }, 100);
-    // }
-
-    // window.addEventListener('resize', onWindowResize);
+    // Initialize the grid and entities
+    createGrid();
+    initalizeGrid();
+    
+    
 
     // Set camera position
     camera.position.set(5, 10, 10);
     camera.lookAt(new THREE.Vector3(5, 0, 5));
-
-    // Event listener for start button
-    // document.getElementById('startButton').addEventListener('click', function() {
-    //     document.getElementById('startButton').style.display = 'none'; // Hide the button after starting
-    //     gameStarted = true; // Set game flag to true
-    //     requestAnimationFrame(animate); // Start the animation loop
-    // });
-
-    // Initial render
     
-    renderer.render(scene, camera);
-
-
-    ants.forEach((ant) => {
-        ant.removeObject();
-    });
-    beetles.forEach((beetle) => {
-        beetle.removeObject();
-    });
+    //initial render
+    // console.log("rendering initial render")
+    // renderer.render(scene, camera);
     
-    renderer.render(scene, camera);
+    // requestAnimationFrame(animate);
 
-    for (let i = 0; i < 10; i++) {
-        for(let j = 0; j < 10; j++) {
-            let c = state2[i][j];
-            if (c === 2) {
-                beetles.push(new Beetle(j,i));
-            } else if (c === 1) {
-                ants.push(new Ant(j,i));
-            }
-        }
-    }
 
-    renderer.render(scene, camera);
 </script>
 </body>
 </html>
