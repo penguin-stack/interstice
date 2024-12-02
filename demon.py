@@ -100,6 +100,7 @@ class Demon:
                 if 0 <= newRow < 10 and 0 <= newCol < 10 and not board[newRow][newCol]:
                     newDemon = Demon(newRow, newCol)
                     newDemon.turns = self.turns
+                    board[newRow][newCol] = newDemon
                     self.sinceMult = 0
                     return
             self.sinceMult = 0

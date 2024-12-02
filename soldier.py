@@ -106,15 +106,16 @@ class Soldier:
         return (dr,dc)
     
     def mult(self, board):
-        if self.sinceMult == 8:
+        if self.sinceMult == 3:
             directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
             for dr, dc in directions:
                 newRow = self.r + dr
                 newCol = self.c + dc
                 if 0 <= newRow < 10 and 0 <= newCol < 10 and not board[newRow][newCol]:
-                    newDemon = Soldier(newRow, newCol)
-                    newDemon.turns = self.turns
+                    newSoldier = Soldier(newRow, newCol)
+                    newSoldier.turns = self.turns
+                    board[newRow][newCol] = newSoldier
                     self.sinceMult = 0
                     return
             self.sinceMult = 0

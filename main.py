@@ -26,8 +26,57 @@ def printBoard(board):
                 print(' ', end='')
         print()
 
+def multDemons(board):
+    for c in range(0, 10):
+        for r in range(0, 10):
+            if type(board[r][c]) is demon.Demon:
+                board[r][c].mult(board)
 
-makeBoard(board)
-printBoard(board)
+def multSoldiers(board):
+    for c in range(0, 10):
+        for r in range(0, 10):
+            if type(board[r][c]) is soldier.Soldier:
+                board[r][c].mult(board)
 
-print(board[2][5].findDirection(board))
+def starveDemons(board):
+    for c in range(0, 10):
+        for r in range(0, 10):
+            if type(board[r][c]) is demon.Demon:
+                board[r][c].starve(board)
+
+def moveSoldiers(board, currentTurn):
+    for c in range(0, 10):
+        for r in range(0, 10):
+            if type(board[r][c]) is soldier.Soldier:
+                board[r][c].move(board, currentTurn)
+
+def moveDemons(board, currentTurn):
+    for c in range(0, 10):
+        for r in range(0, 10):
+            if type(board[r][c]) is demon.Demon:
+                board[r][c].move(board, currentTurn)
+
+
+def play(board, turn):
+    moveDemons(board, turn)
+    moveSoldiers(board, turn)
+    starveDemons(board)
+    multSoldiers(board)
+    multDemons(board)
+
+def main():
+
+    currentTurn = 1
+    makeBoard(board)
+    printBoard(board)
+
+    while(True):
+        print(currentTurn)
+        input("Press Enter: ")
+        play(board, currentTurn)
+        currentTurn += 1
+        printBoard(board)
+        
+
+if __name__ == '__main__':
+    main()
