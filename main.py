@@ -1,5 +1,5 @@
-from demon import Demon
-from soldier import Soldier
+import demon
+import soldier
 
 board = [[None for i in range(10)] for j in range(10)]
 
@@ -10,17 +10,17 @@ def makeBoard(board):
         for line in f:
             for i in range(len(line)):
                 if line[i] == 'S':
-                    board[row][i] = Soldier(row,i)
+                    board[row][i] = soldier.Soldier(row,i)
                 if line[i] == '*':
-                    board[row][i] = Demon(row, i)
+                    board[row][i] = demon.Demon(row, i)
             row += 1
 
 def printBoard(board):
     for x in board:
         for y in x:
-            if type(y) is Demon:
+            if type(y) is demon.Demon:
                 print('*', end='')
-            elif type(y) is Soldier:
+            elif type(y) is soldier.Soldier:
                 print('S', end='')
             else:
                 print(' ', end='')
@@ -30,3 +30,4 @@ def printBoard(board):
 makeBoard(board)
 printBoard(board)
 
+print(board[2][5].findDirection(board))

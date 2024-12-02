@@ -1,5 +1,5 @@
 import math
-from soldier import Soldier
+import soldier
 
 class Demon:
     def __init__(self, r, c):
@@ -26,7 +26,7 @@ class Demon:
             if type(entity) is Demon:
                 self.hasNotEaten += 1
                 return
-            if type(entity) is Soldier:
+            if type(entity) is soldier.Soldier:
                 self.hasNotEaten = 0
 
                 board[newRow][newCol] = self
@@ -65,7 +65,7 @@ class Demon:
                 r += dr
                 c += dc
 
-                if 0 <= r < 10 and 0 <= c < 10 and type(board[r][c]) is Soldier:  # Assuming 'ant' represents an ant
+                if 0 <= r < 10 and 0 <= c < 10 and type(board[r][c]) is soldier.Soldier:  # Assuming 'ant' represents an ant
                     if distance <= min_distance:
                         min_distance = distance
                         num_neighbors = board[r][c].numberOfNeighbors(board)
@@ -89,6 +89,25 @@ class Demon:
         farthestEdges = sorted(farthestEdges, key=lambda tup: tup[2], reverse=True)
         farthestEdge = farthestEdges[0]
         return (farthestEdge[0], farthestEdge[1])
+    
+    def mult(self, board):
+        if self.sinceMult == 8:
+            directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+
+            for dr, dc in directions:
+                newRow = self.r + dr
+                newCol = self.c + dc
+                if 0 <= newRow < 10 and 0 <= newCol < 10 and not board[newRow][newCol]:
+                    newDemon = Demon(newRow, newCol)
+                    newDemon.turns = self.turns
+                    self.sinceMult = 0
+                    return
+            self.sinceMult = 0
+
+    def starve(self, board):
+        if self.hasNotEaten == 5:
+            board[self.r][self.c] = None
+
     
     # def getDirection(self, r, c, ri, ci):
     #     if ri == r and ci < c: return 'West'
