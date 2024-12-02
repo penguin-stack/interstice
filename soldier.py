@@ -2,6 +2,12 @@ class Soldier:
     def __init__(self, r, c):
         self.r = r
         self.c = c
+        self.sinceMult = 0
+        self.turns = 0
+
+    def move(self, board, turn):
+        if self.turns >= turn:
+            return
 
     def numberOfNeighbors(self, board):
         directions = [

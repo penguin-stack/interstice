@@ -11,7 +11,6 @@ class Demon:
 
     def move(self, board, turn):
         if self.turns >= turn:
-            print('SHOULD NEVER BE TRUE')
             return
         
         direction = self.findNearestOrthogonalSoldier(board)
