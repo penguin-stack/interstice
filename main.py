@@ -71,11 +71,12 @@ def main():
     printBoard(board)
 
     while(True):
-        print(currentTurn)
         input("Press Enter: ")
         play(board, currentTurn)
-        currentTurn += 1
         printBoard(board)
+        print(currentTurn)
+        currentTurn += 1
+        
         
 
 if __name__ == '__main__':
