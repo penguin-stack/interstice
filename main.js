@@ -33,23 +33,6 @@ function makeBoard() {
     }
 }
 
-function printBoard(board) {
-    board.forEach(row => {
-        row.forEach(entity => {
-            if (entity) {
-                if (entity instanceof Demon) {
-                    process.stdout.write("*");
-                } else if (entity instanceof Soldier) {
-                    process.stdout.write("S");
-                }
-                
-            } else {
-                process.stdout.write(" ");
-            } 
-        });
-        console.log("");
-    });
-}
 
 function multDemons(board) {
     for (let c = 0; c < 10; c++) {
@@ -153,24 +136,49 @@ function updateBoardOnPage() {
     }
 }
 
-function toggleCell(row, col) {
-    // Toggle between Demon, Soldier, and Empty
-    if (board[row][col] instanceof Demon) {
-        board[row][col] = new Soldier(row, col);
-        initial[row][col] = 1; // Update initial array
-    } else if (board[row][col] instanceof Soldier) {
-        board[row][col] = null;
-        initial[row][col] = 0; // Update initial array
-    } else {
-        board[row][col] = new Demon(row, col);
-        initial[row][col] = 2; // Update initial array
+// Start the auto-play process
+function startAutoPlay() {
+    if (autoPlayInterval) {
+        clearInterval(autoPlayInterval); // Stop auto-play if already running
     }
-    updateBoardOnPage(); // Re-render the board
+
+    autoPlayInterval = setInterval(() => {
+        playOneTurn(); // Play a turn every `playSpeed` milliseconds
+    }, playSpeed);
+
+    // Disable the "Start Auto Play" button and enable "Pause Auto Play"
+    document.getElementById('autoPlayBtn').disabled = true;
+    document.getElementById('pauseAutoPlayBtn').disabled = false;
+}
+
+// Pause the auto-play process
+function pauseAutoPlay() {
+    clearInterval(autoPlayInterval);
+    autoPlayInterval = null;
+
+    // Enable the "Start Auto Play" button and disable "Pause Auto Play"
+    document.getElementById('autoPlayBtn').disabled = false;
+    document.getElementById('pauseAutoPlayBtn').disabled = true;
+}
+
+// Update the speed based on the slider value in real-time
+function updateSpeed() {
+    const speedSlider = document.getElementById('speedSlider');
+    playSpeed = speedSlider.value;
+    document.getElementById('speedValue').textContent = `Speed: ${playSpeed}ms`;
+
+    // If auto-play is already running, update the interval speed immediately
+    if (autoPlayInterval) {
+        clearInterval(autoPlayInterval); // Clear the old interval
+        startAutoPlay(); // Start the auto-play again with the new speed
+    }
 }
 
 
 let currentTurn = 1;
 let gameStarted = false; // Flag to track if the game has started
+let autoPlayInterval;
+let playSpeed = 500; // Default play speed in milliseconds
 makeBoard();
 updateBoardOnPage();
 
@@ -192,3 +200,6 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.playOneTurn = playOneTurn;
+window.startAutoPlay = startAutoPlay;
+window.pauseAutoPlay = pauseAutoPlay;
+window.updateSpeed = updateSpeed;

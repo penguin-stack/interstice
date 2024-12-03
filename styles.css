@@ -18,7 +18,8 @@ body {
     justify-content: center;
     width: 100%;
     gap: 20px;
-    margin-bottom: 20px; /* Space between grid and button */
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Allow wrapping of content */
 }
 
 /* Left and Right columns */
@@ -30,9 +31,11 @@ body {
     text-align: justify;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    height: auto;
-    max-height: 80vh;
+    flex-grow: 1;
+    min-height: 100px;
     overflow-y: auto;
+    height: auto;
+    max-height: none;
 }
 
 /* Style for the grid */
@@ -63,15 +66,14 @@ body {
     font-size: 1.5rem;
 }
 
-/* Hover effect for cells */
-.cell:hover {
-    background-color: #333;
-    border-color: #555;
+/* Style for control buttons */
+.controls {
+    display: flex;
+    gap: 10px; /* Space between the buttons */
+    margin-top: 20px;
 }
 
-/* Style the button */
 button {
-    margin-top: 20px;
     padding: 12px 24px;
     font-size: 1.2rem;
     color: #121212;
@@ -83,11 +85,42 @@ button {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-button:hover {
-    background-color: #e0e0e0;
+/* Style the "Start Auto Play" button */
+#autoPlayBtn {
+    background-color: #4CAF50; /* Green color */
 }
 
-#grid.disabled {
-    pointer-events: none; /* Disable all interaction */
-    opacity: 0.8; /* Slightly dim the grid to indicate it's inactive */
+#autoPlayBtn:hover {
+    background-color: #45a049;
+}
+
+/* Style the "Pause Auto Play" button */
+#pauseAutoPlayBtn {
+    background-color: #888; /* Gray color */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 15px;
+    font-size: 1.5rem; /* Icon size */
+}
+
+#pauseAutoPlayBtn i {
+    color: white; /* White color for the pause icon */
+}
+
+#pauseAutoPlayBtn:hover {
+    background-color: #777;
+}
+
+/* Style the slider and label */
+#speedSlider {
+    margin-top: 20px;
+    width: 200px;
+    accent-color: #4CAF50;
+}
+
+#speedValue {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #ddd;
 }
