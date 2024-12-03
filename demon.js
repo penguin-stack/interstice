@@ -21,11 +21,11 @@ export class Demon {
             direction = this.findFarthestEdge();
         }
 
-        console.log(direction)
+        
         
         let newRow = this.r + direction[0];
         let newCol = this.c + direction[1];
-        console.log(newRow + ' ' + newCol)
+        
         this.sinceMult += 1;
         this.turns += 1;
         if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10) {
