@@ -16,9 +16,46 @@ export class Demon {
             return;
         }
 
-        let direction = findNearestOrthogonalSoldier(board);
+        let direction = this.findNearestOrthogonalSoldier(board);
         if (direction === -1) {
-            direction = findFarthestEdge();
+            direction = this.findFarthestEdge();
+        }
+
+        console.log(direction)
+        
+        let newRow = this.r + direction[0];
+        let newCol = this.c + direction[1];
+        console.log(newRow + ' ' + newCol)
+        this.sinceMult += 1;
+        this.turns += 1;
+        if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10) {
+            let entity = board[newRow][newCol];
+            if (entity instanceof Demon) {
+                this.hasNotEaten += 1;
+                return;
+            }
+            if (entity instanceof Soldier) {
+                this.hasNotEaten = 0;
+
+                board[newRow][newCol] = this;
+                let oldRow = this.r;
+                let oldCol = this.c;
+                this.c = newCol;
+                this.r = newRow;
+                board[oldRow][oldCol] = null;
+            }
+            if (entity === null) {
+                this.hasNotEaten += 1;
+
+                board[newRow][newCol] = this;
+                let oldRow = this.r;
+                let oldCol = this.c;
+                this.c = newCol;
+                this.r = newRow;
+                board[oldRow][oldCol] = null;
+            }
+        } else {
+            this.hasNotEaten += 1;
         }
 
 
@@ -62,6 +99,53 @@ export class Demon {
         }
 
         
+    }
+
+    findFarthestEdge() {
+        const farthestEdges = [];
+
+        farthestEdges.push({ dr: -1, dc: 0, distance: this.r });
+        farthestEdges.push({ dr: 0, dc: 1, distance: 9 - this.c });
+        farthestEdges.push({ dr: 1, dc: 0, distance: 9 - this.r });
+        farthestEdges.push({ dr: 0, dc: -1, distance: this.c });
+
+        // Sort by distance in descending order
+        farthestEdges.sort((a, b) => b.distance - a.distance);
+
+        const farthestEdge = farthestEdges[0];
+        return [farthestEdge.dr, farthestEdge.dc];
+    }
+
+    mult(board) {
+        if (this.sinceMult === 8) {
+            const directions = [
+                [-1, 0], // North
+                [0, 1],  // East
+                [1, 0],  // South
+                [0, -1]  // West
+            ];
+    
+            for (const [dr, dc] of directions) {
+                const newRow = this.r + dr;
+                const newCol = this.c + dc;
+    
+                if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10 && !board[newRow][newCol]) {
+                    const newDemon = new Demon(newRow, newCol);
+                    newDemon.turns = this.turns;
+                    board[newRow][newCol] = newDemon;
+                    this.sinceMult = 0;
+                    return;
+                }
+            }
+    
+            this.sinceMult = 0;
+        }
+    }
+
+    starve(board) {
+        if (this.hasNotEaten === 5) {
+            board[this.r][this.c] = null;
+        }
     }
 
 

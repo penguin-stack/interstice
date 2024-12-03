@@ -1,5 +1,6 @@
 import { Soldier } from './soldier.js';
 import { Demon } from './demon.js';
+import PromptSync from 'prompt-sync';
 
 const board = Array.from({ length: 10 }, () => Array(10).fill(null));
 
@@ -51,6 +52,78 @@ function printBoard(board) {
     });
 }
 
-makeBoard();
-printBoard(board);
-console.log(board[1][1].findNearestOrthogonalSoldier(board));
+function multDemons(board) {
+    for (let c = 0; c < 10; c++) {
+        for (let r = 0; r < 10; r++) {
+            if (board[r][c] instanceof Demon) {
+                board[r][c].mult(board);
+            }
+        }
+    }
+}
+
+function multSoldiers(board) {
+    for (let c = 0; c < 10; c++) {
+        for (let r = 0; r < 10; r++) {
+            if (board[r][c] instanceof Soldier) {
+                board[r][c].mult(board);
+            }
+        }
+    }
+}
+
+function starveDemons(board) {
+    for (let c = 0; c < 10; c++) {
+        for (let r = 0; r < 10; r++) {
+            if (board[r][c] instanceof Demon) {
+                board[r][c].starve(board);
+            }
+        }
+    }
+}
+
+function moveSoldiers(board, currentTurn) {
+    for (let c = 0; c < 10; c++) {
+        for (let r = 0; r < 10; r++) {
+            if (board[r][c] instanceof Soldier) {
+                board[r][c].move(board, currentTurn);
+            }
+        }
+    }
+}
+
+function moveDemons(board, currentTurn) {
+    for (let c = 0; c < 10; c++) {
+        for (let r = 0; r < 10; r++) {
+            if (board[r][c] instanceof Demon) {
+                board[r][c].move(board, currentTurn);
+            }
+        }
+    }
+}
+
+function play(board, turn) {
+    moveDemons(board, turn);
+    moveSoldiers(board, turn);
+    starveDemons(board);
+    multSoldiers(board);
+    multDemons(board);
+}
+
+const prompt = PromptSync();
+
+function main() {
+    let currentTurn = 1;
+    makeBoard();
+    printBoard(board);
+
+    while (true) {
+        const userInput = prompt('Press enter: ');
+        play(board, currentTurn);
+        printBoard(board);
+        console.log(currentTurn);
+        currentTurn += 1;
+    }
+}
+
+main()
