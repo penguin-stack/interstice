@@ -112,22 +112,45 @@ function play(board, turn) {
 function updateBoardOnPage() {
     const grid = document.getElementById("grid");
     grid.innerHTML = ""; // Clear existing grid
-    board.forEach((row, rowIndex) => {
-        row.forEach((cell, colIndex) => {
+    for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
             const cellDiv = document.createElement("div");
             cellDiv.classList.add("cell");
-            if (cell instanceof Demon) {
+
+            // Determine the content of the cell
+            if (board[r][c] instanceof Demon) {
                 cellDiv.textContent = DEMON_EMOJI;
-            } else if (cell instanceof Soldier) {
+            } else if (board[r][c] instanceof Soldier) {
                 cellDiv.textContent = SOLDIER_EMOJI;
             } else {
                 cellDiv.textContent = EMPTY_CELL;
             }
-            // Add click event to toggle between Demon, Soldier, and Empty
-            cellDiv.addEventListener("click", () => toggleCell(rowIndex, colIndex));
+
+            // Add click functionality if the game hasn't started
+            if (!gameStarted) {
+                cellDiv.addEventListener("click", () => {
+                    if (board[r][c] instanceof Demon) {
+                        board[r][c] = null;
+                        initial[r][c] = 0;
+                    } else if (board[r][c] instanceof Soldier) {
+                        board[r][c] = new Demon(r, c);
+                        initial[r][c] = 2;
+                    } else {
+                        board[r][c] = new Soldier(r, c);
+                        initial[r][c] = 1;
+                    }
+                    updateBoardOnPage(); // Refresh the grid
+                });
+            }
+
             grid.appendChild(cellDiv);
-        });
-    });
+        }
+    }
+
+    // Disable interaction if the game has started
+    if (gameStarted) {
+        grid.classList.add("disabled");
+    }
 }
 
 function toggleCell(row, col) {
@@ -147,11 +170,15 @@ function toggleCell(row, col) {
 
 
 let currentTurn = 1;
+let gameStarted = false; // Flag to track if the game has started
 makeBoard();
 updateBoardOnPage();
 
 
 function playOneTurn() {
+    if (!gameStarted) {
+        gameStarted = true; // Mark the game as started
+    }
     play(board, currentTurn);
     updateBoardOnPage();
     currentTurn += 1;

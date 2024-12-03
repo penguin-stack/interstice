@@ -58,3 +58,8 @@ button {
 button:hover {
     background-color: #e0e0e0;
 }
+
+#grid.disabled {
+    pointer-events: none; /* Disable all interaction */
+    opacity: 0.8; /* Slightly dim the grid to indicate it's inactive */
+}
