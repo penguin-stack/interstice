@@ -99,6 +99,13 @@ body {
   font-weight: bold;
 }
 
+/* Slightly dimmed grid style */
+#grid.disabled {
+  pointer-events: none; /* Disable interactions */
+  background-color: rgba(0, 0, 0, 0.1); /* Add a subtle overlay */
+  opacity: 0.7; /* Slightly dim the grid */
+}
+
 
 
 button {

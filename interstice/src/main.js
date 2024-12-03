@@ -211,6 +211,7 @@ updateBoardOnPage();
 function playOneTurn() {
   if (!gameStarted) {
     gameStarted = true; // Mark the game as started
+    document.getElementById("grid").classList.add("disabled"); // Gray out the grid
   }
 
   // Check for win conditions before playing a turn
