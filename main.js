@@ -37,9 +37,9 @@ function printBoard(board) {
     board.forEach(row => {
         row.forEach(entity => {
             if (entity) {
-                if (entity.name === 'Demon') {
+                if (entity instanceof Demon) {
                     process.stdout.write("*");
-                } else if (entity.name === 'Soldier') {
+                } else if (entity instanceof Soldier) {
                     process.stdout.write("S");
                 }
                 
@@ -53,3 +53,4 @@ function printBoard(board) {
 
 makeBoard();
 printBoard(board);
+console.log(board[1][1].findNearestOrthogonalSoldier(board));
