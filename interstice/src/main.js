@@ -215,12 +215,12 @@ function playOneTurn() {
 
   // Check for win conditions before playing a turn
   if (demonsWin(board)) {
-    endGame("Demons Win!");
+    endGame("Demons Win");
     return;
   }
 
   if (soldiersWin(board)) {
-    endGame("Soldiers Win!");
+    endGame("Soldiers Win");
     return;
   }
 
@@ -239,6 +239,14 @@ function updateTurnCounter() {
 
 function endGame(message) {
   const winMessageElement = document.getElementById("winMessage");
+
+  // Set the message and color based on the winner
+  if (message === "Demons Win") {
+    winMessageElement.style.color = "#8B0000"; // Dark red for Demons
+  } else if (message === "Soldiers Win") {
+    winMessageElement.style.color = "#A9A9A9"; // Light grey for Soldiers
+  }
+
   winMessageElement.textContent = message; // Display the win message
 
   // Stop the auto-play if it's running
