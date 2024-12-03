@@ -82,6 +82,30 @@ function moveDemons(board, currentTurn) {
   }
 }
 
+function demonsWin(board) {
+  let foundSoldier = false;
+  for (let c = 0; c < 10; c++) {
+    for (let r = 0; r < 10; r++) {
+      if (board[r][c] instanceof Soldier) {
+        foundSoldier = true;
+      }
+    }
+  }
+  return !foundSoldier;
+}
+
+function soldiersWin(board) {
+  let foundDemon = false;
+  for (let c = 0; c < 10; c++) {
+    for (let r = 0; r < 10; r++) {
+      if (board[r][c] instanceof Demon) {
+        foundDemon = true;
+      }
+    }
+  }
+  return !foundDemon;
+}
+
 function play(board, turn) {
   moveDemons(board, turn);
   moveSoldiers(board, turn);
@@ -188,9 +212,44 @@ function playOneTurn() {
   if (!gameStarted) {
     gameStarted = true; // Mark the game as started
   }
+
+  // Check for win conditions before playing a turn
+  if (demonsWin(board)) {
+    endGame("Demons Win!");
+    return;
+  }
+
+  if (soldiersWin(board)) {
+    endGame("Soldiers Win!");
+    return;
+  }
+
   play(board, currentTurn);
   updateBoardOnPage();
+
+  // Increment and update the turn counter
   currentTurn += 1;
+  updateTurnCounter();
+}
+
+function updateTurnCounter() {
+  const turnCounterElement = document.getElementById("turnCounter");
+  turnCounterElement.textContent = `Turn: ${currentTurn}`;
+}
+
+function endGame(message) {
+  const winMessageElement = document.getElementById("winMessage");
+  winMessageElement.textContent = message; // Display the win message
+
+  // Stop the auto-play if it's running
+  if (autoPlayInterval) {
+    clearInterval(autoPlayInterval);
+    autoPlayInterval = null;
+  }
+
+  // Disable further interactions
+  document.getElementById("autoPlayBtn").disabled = true;
+  document.getElementById("playOneTurnBtn").disabled = true;
 }
 
 // Event listener for the Enter key

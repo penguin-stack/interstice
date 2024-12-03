@@ -30,6 +30,14 @@ body {
   gap: 20px; /* Space between grid and controls */
 }
 
+.turn-counter {
+  font-size: 1.2rem;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
 /* Style for the grid */
 #grid {
   display: grid;
@@ -81,6 +89,14 @@ body {
   justify-content: center; /* Center the buttons horizontally */
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
   width: 100%; /* Ensure buttons span the width of the grid */
+}
+
+.win-message {
+  font-size: 1.5rem;
+  color: #4CAF50; /* Green for Soldiers or Red for Demons */
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 
