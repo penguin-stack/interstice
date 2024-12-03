@@ -124,3 +124,14 @@ button {
     font-size: 1rem;
     color: #ddd;
 }
+
+.highlight {
+    color: #8B0000; /* Dark red */
+    font-weight: bold;
+}
+
+.highlight-soldier {
+    color: #A9A9A9; /* Light grey */
+    font-weight: bold;
+}
+

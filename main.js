@@ -3,7 +3,7 @@ import { Demon } from './demon.js';
 
 const board = Array.from({ length: 10 }, () => Array(10).fill(null));
 const DEMON_EMOJI = "👹";
-const SOLDIER_EMOJI = "♘";
+const SOLDIER_EMOJI = "♞";
 const EMPTY_CELL = " ";
 
 let initial = [

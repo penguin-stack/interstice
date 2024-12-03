@@ -11,11 +11,55 @@
 <body>
     <div class="container">
         <div class="left-column">
-            Mauris velit dolor, sagittis a iaculis at, consequat eget ipsum. Sed congue accumsan nisi a fringilla. Donec ac nisi a odio interdum sagittis. Donec condimentum sit amet erat eu dignissim...
+            <h1>Interstice</h1>
+            <p> is a zero player game. Either <span class="highlight">Demons</span> win, <span class="highlight-soldier">Soldiers</span> win or there is an <strong>Interstice</strong>. An <strong>Interstice</strong> occurs when you find a set of states that repeat.
+            The chances of finding an <strong>Interstice</strong> are very small.</p>
+        
+            <p>Here we have a 10 x 10 grid with <span class="highlight">Demons</span> and <span class="highlight-soldier">Soldiers</span>, you have the initial state of the board and can toggle each square between <span class="highlight">Demon</span> and <span class="highlight-soldier">Soldier</span> or empty. Click 'Play One Turn'
+            or press the Enter key to advance a single turn. You can also click the 'Start Auto Play' button to watch the game unfold.</p>
+        
+            <p>Can you find an <strong>Interstice</strong>?</p>
+        
+            <!-- New text box added -->
+            
         </div>
+        
+        
         <div id="grid"></div>
         <div class="right-column">
-            Mauris a purus ac nulla placerat commodo. Sed non eros maximus, dapibus nisi eget, molestie risus. Proin posuere tortor at est rhoncus lacinia. Vestibulum non urna convallis velit pellentesque placerat...
+            <h2>Rules</h2>
+            <p>A <span class="highlight">Demon</span> will consume a <span class="highlight-soldier">Soldier</span> if it moves into the same space as the <span class="highlight-soldier">Soldier</span>. The grid is traversed from top to bottom, left to right, so entities to the left of the board are moved/multed/starved first.
+                All moves/mults are performed 4-directionally (N,E,S,W).
+        
+                The order of actions performed each turn are as follows:
+                <ol>
+                    <li><span class="highlight">Demons</span> move</li>
+                    <li><span class="highlight-soldier">Soldiers</span> move</li>
+                    <li><span class="highlight">Demons</span> starve</li>
+                    <li><span class="highlight-soldier">Soldiers</span> mult</li>
+                    <li><span class="highlight">Demons</span> mult</li>
+                </ol>
+            </p>
+            <p><h3><span class="highlight">Demon</span> 👹 </h1>
+                <ul>
+                    <li>moves towards nearest orthogonal <span class="highlight-soldier">Soldier</span></li>
+                    <li>if there are multiple nearest, then move towards <span class="highlight-soldier">Soldier</span> with most neighbors (8-directional)</li>
+                    <li>if multiple <span class="highlight-soldier">Soldiers</span> with most neighbors, break ties using (N,E,S,W)</li>
+                    <li>if there is no nearest <span class="highlight-soldier">Soldier</span> then move towards furthest edge, breaking ties using (N,E,S,W)</li>
+                    <li>if the <span class="highlight">Demon</span> survives for 8 turns, it mults</li>
+                    <li>multing occurs by adding an additional <span class="highlight">Demon</span> in the first empty space around the multing 
+                        <span class="highlight">Demon</span> clockwise, starting with (N)</li>
+                    <li>a <span class="highlight">Demon</span> starves if it does not consume a <span class="highlight-soldier">Soldier</span> within 5 turns</li>
+                </ul>
+            </p>
+            <p><h3><span class="highlight-soldier">Soldier</span> ♞ </h1>
+                <ul>
+                    <li>moves away from nearest orthogonal <span class="highlight">Demon</span> and stands still if there are none</li>
+                    <li>if there are multiple nearest, then move towards first direction with no <span class="highlight">Demon</span> in order of (N,E,S,W)</li>
+                    <li>if there are <span class="highlight">Demons</span> in all directions, move towards furthest <span class="highlight">Demon</span> breaking ties using (N,E,S,W)</li>
+                    <li>if the <span class="highlight-soldier">Soldier</span> survives for 3 turns, it mults, using the same logic as <span class="highlight">Demon</span></li>
+                </ul>
+            </p>
         </div>
     </div>
     <div class="controls">
