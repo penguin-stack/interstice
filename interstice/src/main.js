@@ -5,6 +5,7 @@ const board = Array.from({ length: 10 }, () => Array(10).fill(null));
 const DEMON_EMOJI = "👹";
 const SOLDIER_EMOJI = "♞";
 const EMPTY_CELL = " ";
+const seenStates = new Set();
 
 let initial = [
   [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
@@ -104,6 +105,22 @@ function soldiersWin(board) {
     }
   }
   return !foundDemon;
+}
+
+function encode(board) {
+  let s = "";
+  for (let c = 0; c < 10; c++) {
+    for (let r = 0; r < 10; r++) {
+      if (board[r][c] instanceof Demon) {
+        s = s + '*';
+      } else if (board[r][c] instanceof Soldier) {
+        s = s + 'S';
+      } else {
+        s = s + 'x';
+      }
+    }
+  }
+  return s;
 }
 
 function play(board, turn) {
@@ -225,6 +242,14 @@ function playOneTurn() {
     return;
   }
 
+  const encodedString = encode(board);
+  if (seenStates.has(encodedString)) {
+    const winMessageElement = document.getElementById("winMessage");
+    winMessageElement.textContent = "Interstice!";
+  } else {
+    seenStates.add(encodedString);
+  }
+
   play(board, currentTurn);
   updateBoardOnPage();
 
@@ -272,3 +297,48 @@ window.playOneTurn = playOneTurn;
 window.startAutoPlay = startAutoPlay;
 window.pauseAutoPlay = pauseAutoPlay;
 window.updateSpeed = updateSpeed;
+
+window.openModal = function () {
+  const modal = document.getElementById("inputModal");
+  modal.style.display = "flex"; // Show the modal
+};
+
+window.closeModal = function () {
+  const modal = document.getElementById("inputModal");
+  modal.style.display = "none"; // Hide the modal
+};
+
+window.applyEncodedString = function () {
+  const input = document.getElementById("encodedString").value;
+
+  // Validate the input string
+  if (input.length !== 100 || !/^[x*S]*$/.test(input)) {
+    alert("Invalid input! Please enter a 100-character string containing only 'x', '*', or 'S'.");
+    return;
+  }
+
+  // Reset the contents of the board and initial arrays without reassigning the variables
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 10; c++) {
+      const index = r * 10 + c;
+      const char = input[index];
+
+      if (char === "*") {
+        board[r][c] = new Demon(r, c);
+        initial[r][c] = 2;
+      } else if (char === "S") {
+        board[r][c] = new Soldier(r, c);
+        initial[r][c] = 1;
+      } else {
+        board[r][c] = null; // Empty
+        initial[r][c] = 0;
+      }
+    }
+  }
+
+  // Update the grid on the page
+  updateBoardOnPage();
+
+  // Close the modal
+  window.closeModal();
+};
