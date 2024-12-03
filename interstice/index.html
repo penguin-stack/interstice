@@ -41,6 +41,7 @@
               <button id="pauseAutoPlayBtn" onclick="pauseAutoPlay()">
                 <i class="fas fa-pause"></i>
               </button>
+              <button id="randomizeBtn" onclick="randomizeGrid()">Randomize Grid</button> 
             </div>
             <div id="turnCounter" class="turn-counter">Turn: 1</div> 
             <div class="slider">
@@ -55,7 +56,21 @@
                 />
                 <span id="speedValue">Speed: 500ms</span>
               </div>
+              <button id="openModalBtn" onclick="openModal()">Initialize with String</button>
           </div>
+
+                    <!-- Modal for encoded string input -->
+            <div id="inputModal" class="modal">
+                <div class="modal-content">
+                    <h3>Initialize Grid</h3>
+                    <input type="text" id="encodedString" placeholder="Enter 100-character encoded string">
+                    <div class="modal-actions">
+                        <button onclick="applyEncodedString()">Apply</button>
+                        <button onclick="closeModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+          
         <div class="right-column">
             <h2>Rules</h2>
             <p>A <span class="highlight">Demon</span> will consume a <span class="highlight-soldier">Soldier</span> if it moves into the same space as the <span class="highlight-soldier">Soldier</span>. The grid is traversed from top to bottom, left to right, so entities to the left of the board are moved/multed/starved first.

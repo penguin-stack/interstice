@@ -342,3 +342,32 @@ window.applyEncodedString = function () {
   // Close the modal
   window.closeModal();
 };
+
+window.randomizeGrid = function () {
+  // Reset the board and initial state
+  for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 10; c++) {
+          const randomValue = Math.random();
+          if (randomValue < 0.33) {
+              board[r][c] = new Demon(r, c);
+              initial[r][c] = 2;
+          } else if (randomValue < 0.66) {
+              board[r][c] = new Soldier(r, c);
+              initial[r][c] = 1;
+          } else {
+              board[r][c] = null; // Empty
+              initial[r][c] = 0;
+          }
+      }
+  }
+
+  // Update the grid on the page
+  updateBoardOnPage();
+
+  // Reset the game state
+  currentTurn = 1;
+  document.getElementById("turnCounter").textContent = "Turn: 1";
+  document.getElementById("winMessage").textContent = ""; // Clear any win message
+  gameStarted = false;
+  document.getElementById("grid").classList.remove("disabled"); // Re-enable grid interactions
+};

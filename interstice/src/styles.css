@@ -302,3 +302,19 @@ button {
   background-color: #f44336;
   color: white;
 }
+
+#randomizeBtn {
+  background-color: #1E90FF; /* Dodger Blue */
+  color: white;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px; /* Add space above */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+#randomizeBtn:hover {
+  background-color: #187bcd; /* Darker blue on hover */
+}
