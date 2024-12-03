@@ -184,4 +184,11 @@ function playOneTurn() {
     currentTurn += 1;
 }
 
+// Event listener for the Enter key
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        playOneTurn();
+    }
+});
+
 window.playOneTurn = playOneTurn;
