@@ -1,0 +1,201 @@
+/* Dark mode background for the entire page */
+body {
+  background-color: #121212;
+  color: white;
+  display: flex;
+  flex-direction: column; /* Stack everything vertically */
+  align-items: center; /* Center horizontally */
+  justify-content: center; /* Center vertically */
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+
+/* Main container for the grid and columns */
+.container {
+  display: flex;
+  flex-direction: row; /* Align columns and grid horizontally */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  gap: 20px; /* Space between columns and grid */
+  width: 100%;
+}
+
+/* Section for grid and controls */
+.grid-section {
+  display: flex;
+  flex-direction: column; /* Stack grid and controls vertically */
+  align-items: center; /* Center horizontally */
+  gap: 20px; /* Space between grid and controls */
+}
+
+/* Style for the grid */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap: 0;
+  background-color: #1e1e1e;
+  border: 2px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  width: 520px;
+  height: 520px;
+  overflow: hidden;
+  user-select: none; /* Disable text selection */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+}
+
+/* Style each cell */
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #252525;
+  color: white;
+  border: 1px solid #333;
+  font-size: 1.5rem;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  user-select: none; /* Disable text selection */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+}
+
+/* Ensure hover effect does not shift cells */
+.cell:hover {
+  background-color: #333; /* Highlight on hover */
+  transform: scale(1.05); /* Subtle zoom effect */
+  z-index: 1; /* Bring hovered cell to the front */
+}
+
+/* Style for control buttons */
+.controls {
+  display: flex;
+  gap: 10px; /* Space between the buttons */
+  justify-content: center; /* Center the buttons horizontally */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  width: 100%; /* Ensure buttons span the width of the grid */
+}
+
+
+
+button {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  color: #121212;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Style the "Start Auto Play" button */
+#autoPlayBtn {
+  background-color: #4CAF50; /* Green color */
+}
+
+#autoPlayBtn:hover {
+  background-color: #45a049;
+}
+
+/* Style the "Pause Auto Play" button */
+#pauseAutoPlayBtn {
+  background-color: #888; /* Gray color */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 15px;
+  font-size: 1.5rem; /* Icon size */
+}
+
+#pauseAutoPlayBtn i {
+  color: white; /* White color for the pause icon */
+}
+
+#pauseAutoPlayBtn:hover {
+  background-color: #777;
+}
+
+/* Style for the slider and label */
+.slider {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center slider and label */
+  gap: 10px;
+}
+
+#speedSlider {
+  width: 200px;
+  accent-color: #4CAF50;
+}
+
+#speedValue {
+  font-size: 1rem;
+  color: #ddd;
+}
+
+/* Left and Right columns */
+.left-column {
+  width: 300px;
+  padding: 15px;
+  color: #ddd;
+  background-color: #252525;
+  text-align: justify;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  height: auto;
+  max-height: none;
+}
+
+/* Right Column (Rules) */
+.right-column {
+  width: 600px; /* Adjust width */
+  height: 800px; /* Set height to make it square */
+  padding: 15px;
+  color: #ddd;
+  background-color: #252525;
+  text-align: justify;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  overflow-y: auto; /* Allow scrolling if content overflows */
+  box-sizing: border-box; /* Include padding in height/width */
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items */
+    gap: 10px; /* Reduce gap between items */
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%; /* Full width for stacked columns */
+    height: auto;
+    text-align: center; /* Optional: Center-align text */
+  }
+
+  #grid {
+    margin: 0 auto; /* Center the grid in the stack */
+  }
+}
+
+.highlight {
+  color: #8B0000; /* Dark red */
+  font-weight: bold;
+}
+
+.highlight-soldier {
+  color: #A9A9A9; /* Light grey */
+  font-weight: bold;
+}
